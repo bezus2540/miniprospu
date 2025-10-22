@@ -1,163 +1,199 @@
-"use client";
-
-import { useMemo, useState } from "react";
 import Link from "next/link";
 import BottomNav from "@/components/BottomNav";
 
-type CartItem = {
+type Item = {
   id: string;
   name: string;
-  price: number; // ราคาต่อชิ้น
-  qty: number;
-  size?: string;
+  price: number;
   img: string;
+  href: string;
 };
 
-const initialItems: CartItem[] = [
-  { id: "shirt", name: "เสื้อนักศึกษา", price: 399, qty: 1, size: "M",  img: "/products/shirt.png" },
-  { id: "pants", name: "กางเกงนักศึกษา", price: 299, qty: 1, size: "M",  img: "/products/pants.png" },
-  { id: "shoes", name: "รองเท้านักศึกษา", price: 500, qty: 1, size: "44", img: "/products/shoes.jpg" },
+const shirts: Item[] = [
+  { id: "shirt-men",   name: "เสื้อนักศึกษา (ชาย)",  price: 399, img: "/products/shirt.png",      href: "/product/shirt" },
+  { id: "shirt-women", name: "เสื้อนักศึกษา (หญิง)", price: 399, img: "/products/shirt-women.jpg", href: "/product/shirt-women" },
 ];
 
-const formatTHB = (n: number) =>
-  new Intl.NumberFormat("th-TH", {
-    style: "currency",
-    currency: "THB",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
+const bottoms: Item[] = [
+  { id: "pants",  name: "กางเกงนักศึกษา", price: 299, img: "/products/pants.png",  href: "/product/pants" },
+  { id: "skirt",  name: "กระโปรงนักศึกษา", price: 299, img: "/products/skirt.png", href: "/product/skirt" },
+];
 
-export default function CartPage() {
-  const [items, setItems] = useState<CartItem[]>(initialItems);
-  const [q, setQ] = useState("");
+const shoe: Item[] = [
+  { id: "shoes",  name: "รองเท้าคัทชู", price: 299, img: "/products/shoes.jpg",  href: "/product/shoes" },
+  { id: "shoes-women",  name: "รองเท้าคัทชู(หญิง)", price: 299, img: "/products/shoes-women.jpg", href: "/product/shoes-women" },
+];
+const sock: Item[] = [
+  { id: "socks",  name: "ถุงเท้า", price: 39, img: "/products/socks.jpg",  href: "/product/socks" },
+ 
+];
+const belt: Item[] = [
+  { id: "belt",  name: "เข็มขัดนักศึกษา(ชาย)", price: 99, img: "/products/belt.jpg",  href: "/product/belt" },
+  { id: "belt-women",  name: "เข็มขัดนักศึกษา(หญิง)", price: 99, img: "/products/belt-women.png", href: "/product/belt-women" },
+];
+const tie: Item[] = [
+  { id: "tie-men",   name: "เนคไท (ชาย)",  price: 299, img: "/products/tie.jpg",      href: "/product/tie" },
+];
 
-  const filtered = useMemo(
-    () =>
-      items.filter(
-        (it) =>
-          it.name.toLowerCase().includes(q.toLowerCase()) ||
-          it.size?.toLowerCase().includes(q.toLowerCase())
-      ),
-    [items, q]
-  );
-
-  const subTotal = useMemo(
-    () => items.reduce((s, it) => s + it.price * it.qty, 0),
-    [items]
-  );
-
-  function inc(id: string) {
-    setItems((arr) => arr.map((it) => (it.id === id ? { ...it, qty: it.qty + 1 } : it)));
-  }
-  function dec(id: string) {
-    setItems((arr) => arr.map((it) => (it.id === id ? { ...it, qty: Math.max(1, it.qty - 1) } : it)));
-  }
-  function remove(id: string) {
-    setItems((arr) => arr.filter((it) => it.id !== id));
-  }
-
+export default function CategoriesPage() {
   return (
     <div className="min-h-screen w-full bg-pink-200 flex justify-center">
       <div className="relative w-full max-w-md bg-pink-100 min-h-screen shadow-2xl pb-28">
         {/* Header */}
         <header className="sticky top-0 z-10 bg-white/95 backdrop-blur-md">
           <div className="flex items-center gap-3 px-4 py-3">
-            <Link href="/shop" className="rounded-full p-2 hover:bg-gray-100" aria-label="Back">
-              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2}>
-                <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </Link>
-            <h1 className="text-lg font-semibold">My Cart</h1>
+            <h1 className="text-lg font-semibold">หมวดหมู่สินค้า</h1>
           </div>
-
         </header>
 
-        {/* List */}
-        <main className="px-4 py-3 space-y-4">
-          {filtered.map((p) => {
-            const lineTotal = p.price * p.qty; // ราคารวมของรายการนี้
-            return (
-              <article key={p.id} className="rounded-2xl bg-pink-300/60 p-3">
-                {/* สี่เหลี่ยมใบเดียว: ซ้ายรูป / ขวารายละเอียด */}
-                <div className="relative rounded-2xl bg-white p-3 shadow-sm">
-                  {/* ปุ่มลบ */}
-                  <button
-                    onClick={() => remove(p.id)}
-                    className="absolute right-2 -top-3 h-8 w-8 rounded-full bg-white shadow flex items-center justify-center"
-                    aria-label={`Remove ${p.name}`}
-                    title="ลบสินค้า"
-                  >
-                    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2}>
-                      <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </button>
-
-                  <div className="grid grid-cols-[96px,1fr] gap-3 items-center">
-                    {/* รูป (บังคับสัดส่วนให้เท่ากันทุกรายการ) */}
-                    <div className="h-28 rounded-xl bg-gray-50 flex items-center justify-center">
-                      <img src={p.img} alt={p.name} className="h-full w-full object-contain p-2" />
-                    </div>
-
-                    {/* เนื้อหา (ขวา) */}
-                    <div className="flex flex-col gap-2">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <h3 className="font-semibold text-sm">{p.name}</h3>
-                          <p className="text-xs text-gray-600">รายละเอียด</p>
-                          {p.size && <p className="text-xs text-gray-600">size {p.size}</p>}
-                        </div>
-
-                        {/* qty control */}
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={() => dec(p.id)}
-                            className="h-7 w-7 rounded-full border border-gray-300 flex items-center justify-center text-sm hover:bg-gray-50"
-                            aria-label="ลดจำนวน"
-                          >
-                            –
-                          </button>
-                          <span className="min-w-[1.5rem] text-center text-sm font-semibold">{p.qty}</span>
-                          <button
-                            onClick={() => inc(p.id)}
-                            className="h-7 w-7 rounded-full border border-gray-300 flex items-center justify-center text-sm hover:bg-gray-50"
-                            aria-label="เพิ่มจำนวน"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* บรรทัดราคา */}
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-gray-500">{formatTHB(p.price)} / ชิ้น</span>
-                        <div className="text-sm font-semibold text-pink-800">
-                          {formatTHB(lineTotal)}
-                        </div>
-                      </div>
-                    </div>
+        <main className="px-4 pt-2 pb-28">
+          {/* กลุ่ม: เสื้อ */}
+          <section className="mt-2">
+            <h2 className="text-xl font-bold mb-3">เสื้อนักศึกษา</h2>
+            <div className="grid grid-cols-2 gap-4">
+              {shirts.map((p) => (
+                <Link
+                  key={p.id}
+                  href={p.href}
+                  className="block rounded-3xl bg-white p-3 shadow-lg hover:shadow-xl transition"
+                >
+                  <div className="rounded-2xl">
+                    <img
+                      src={p.img}
+                      alt={p.name}
+                      className="mx-auto h-36 w-auto object-contain"
+                    />
                   </div>
-                </div>
-              </article>
-            );
-          })}
-
-          {filtered.length === 0 && (
-            <p className="text-center text-sm text-gray-600 pt-6">ไม่มีสินค้าที่ตรงกับคำค้น</p>
-          )}
-
-          {/* Summary */}
-          <div className="mt-2 rounded-2xl bg-white p-4 shadow">
-            <div className="flex items-center justify-between">
-              <span className="font-semibold">ยอดรวม</span>
-              <span className="font-bold">{formatTHB(subTotal)}</span>
+                  <div className="mt-3">
+                    <p className="text-sm font-semibold">{p.name}</p>
+                    <p className="text-xs text-pink-700">THB : {p.price} บาท</p>
+                  </div>
+                </Link>
+              ))}
             </div>
-            <Link
-              href="/pay"
-              className="mt-3 block rounded-xl bg-pink-600 text-white text-center py-3 font-semibold hover:bg-pink-700"
-            >
-              ชำระเงิน
-            </Link>
-          </div>
+          </section>
+
+          {/* กลุ่ม: ส่วนล่าง */}
+          <section className="mt-6">
+            <h2 className="text-xl font-bold mb-3">กางเกง / กระโปรง</h2>
+            <div className="grid grid-cols-2 gap-4">
+              {bottoms.map((p) => (
+                <Link
+                  key={p.id}
+                  href={p.href}
+                  className="block rounded-3xl bg-white p-3 shadow-lg hover:shadow-xl transition"
+                >
+                  <div className="rounded-2xl">
+                    <img
+                      src={p.img}
+                      alt={p.name}
+                      className="mx-auto h-36 w-auto object-contain"
+                    />
+                  </div>
+                  <div className="mt-3">
+                    <p className="text-sm font-semibold">{p.name}</p>
+                    <p className="text-xs text-pink-700">THB : {p.price} บาท</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+          <section className="mt-6">
+            <h2 className="text-xl font-bold mb-3">รองเท้าคัทชู</h2>
+            <div className="grid grid-cols-2 gap-4">
+              {shoe.map((p) => (
+                <Link
+                  key={p.id}
+                  href={p.href}
+                  className="block rounded-3xl bg-white p-3 shadow-lg hover:shadow-xl transition"
+                >
+                  <div className="rounded-2xl">
+                    <img
+                      src={p.img}
+                      alt={p.name}
+                      className="mx-auto h-36 w-auto object-contain"
+                    />
+                  </div>
+                  <div className="mt-3">
+                    <p className="text-sm font-semibold">{p.name}</p>
+                    <p className="text-xs text-pink-700">THB : {p.price} บาท</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+          <section className="mt-6">
+            <h2 className="text-xl font-bold mb-3">ถุงเท้านักศึกษา</h2>
+            <div className="grid grid-cols-2 gap-4">
+              {sock.map((p) => (
+                <Link
+                  key={p.id}
+                  href={p.href}
+                  className="block rounded-3xl bg-white p-3 shadow-lg hover:shadow-xl transition"
+                >
+                  <div className="rounded-2xl">
+                    <img
+                      src={p.img}
+                      alt={p.name}
+                      className="mx-auto h-36 w-auto object-contain"
+                    />
+                  </div>
+                  <div className="mt-3">
+                    <p className="text-sm font-semibold">{p.name}</p>
+                    <p className="text-xs text-pink-700">THB : {p.price} บาท</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+          <section className="mt-2">
+            <h2 className="text-xl font-bold mb-3">เข็มขัดนักศึกษา</h2>
+            <div className="grid grid-cols-2 gap-4">
+              {belt.map((p) => (
+                <Link
+                  key={p.id}
+                  href={p.href}
+                  className="block rounded-3xl bg-white p-3 shadow-lg hover:shadow-xl transition"
+                >
+                  <div className="rounded-2xl">
+                    <img
+                      src={p.img}
+                      alt={p.name}
+                      className="mx-auto h-36 w-auto object-contain"
+                    />
+                  </div>
+                  <div className="mt-3">
+                    <p className="text-sm font-semibold">{p.name}</p>
+                    <p className="text-xs text-pink-700">THB : {p.price} บาท</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+          <section className="mt-2">
+            <h2 className="text-xl font-bold mb-3">เนคไท</h2>
+            <div className="grid grid-cols-2 gap-4">
+              {tie.map((p) => (
+                <Link
+                  key={p.id}
+                  href={p.href}
+                  className="block rounded-3xl bg-white p-3 shadow-lg hover:shadow-xl transition"
+                >
+                  <div className="rounded-2xl">
+                    <img
+                      src={p.img}
+                      alt={p.name}
+                      className="mx-auto h-36 w-auto object-contain"
+                    />
+                  </div>
+                  <div className="mt-3">
+                    <p className="text-sm font-semibold">{p.name}</p>
+                    <p className="text-xs text-pink-700">THB : {p.price} บาท</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
         </main>
 
         {/* Bottom nav */}

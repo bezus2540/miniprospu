@@ -1,23 +1,25 @@
 "use client";
+
 import BottomNav from "@/components/BottomNav";
+import Link from "next/link";
 
 export default function ShopPage() {
   const featured = [
-    { id: "shirt", name: "เสื้อนักศึกษา", price: 399, img: "/products/shirt.png" },
+    { id: "shirt", name: "เสื้อนักศึกษา(ชาย)", price: 399, img: "/products/shirt.png" },
     { id: "pants", name: "กางเกงนักศึกษา", price: 299, img: "/products/pants.png" },
   ];
 
   const bestSellers = [
-    { id: "shoes", name: "รองเท้านักศึกษา", price: 499, img: "/products/shoes.jpg" },
+    { id: "shoes", name: "รองเท้าคัทชู(ชาย)", price: 499, img: "/products/shoes.jpg" },
     { id: "socks", name: "ถุงเท้า", price: 39, img: "/products/socks.jpg" },
     { id: "tie", name: "เน็คไท", price: 299, img: "/products/tie.jpg" },
-    { id: "belt", name: "เข็มขัด", price: 99, img: "/products/belt.jpg" },
+    { id: "belt", name: "เข็มขัดนักศึกษา(ชาย)", price: 99, img: "/products/belt.jpg" },
   ];
 
   return (
     <div className="min-h-screen w-full bg-pink-200 flex justify-center">
       <div className="relative w-full max-w-md bg-pink-100 min-h-screen shadow-2xl">
-       
+        {/* Header */}
         <header className="sticky top-0 z-10 bg-pink-100/80 backdrop-blur-md">
           <div className="flex items-center gap-3 px-4 pt-4">
             <img src="/logo.png" alt="SPU" className="h-8 w-auto object-contain" />
@@ -39,13 +41,19 @@ export default function ShopPage() {
         <main className="px-4 pb-28 pt-2">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-xl font-bold">สินค้า</h2>
-            <button className="text-sm font-semibold text-pink-700">สินค้าทั้งหมด</button>
+            <Link href="/categories" className="text-sm font-semibold text-pink-700 hover:underline">
+              สินค้าทั้งหมด
+            </Link>
           </div>
 
           {/* Featured */}
           <div className="grid grid-cols-2 gap-4">
             {featured.map((p) => (
-              <div key={p.id} className="rounded-3xl bg-white p-3 shadow-lg">
+              <Link
+                key={p.id}
+                href={`/product/${p.id}`}
+                className="block rounded-3xl bg-white p-3 shadow-lg hover:shadow-xl transition cursor-pointer"
+              >
                 <div className="rounded-2xl bg-white">
                   <img src={p.img} alt={p.name} className="mx-auto h-36 w-auto object-contain" />
                 </div>
@@ -53,7 +61,7 @@ export default function ShopPage() {
                   <p className="text-sm font-semibold">{p.name}</p>
                   <p className="text-xs text-pink-700">THB : {p.price} บาท</p>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
 
@@ -61,7 +69,11 @@ export default function ShopPage() {
           <h3 className="mt-6 text-xl font-bold">สินค้าขายดี</h3>
           <div className="mt-3 grid grid-cols-2 gap-3">
             {bestSellers.map((p) => (
-              <div key={p.id} className="flex items-center gap-3 rounded-xl bg-white p-3 shadow">
+              <Link
+                key={p.id}
+                href={`/product/${p.id}`}
+                className="flex items-center gap-3 rounded-xl bg-white p-3 shadow hover:shadow-md transition cursor-pointer"
+              >
                 <div className="h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-gray-100">
                   <img src={p.img} alt={p.name} className="h-full w-full object-contain" />
                 </div>
@@ -69,13 +81,13 @@ export default function ShopPage() {
                   <p className="truncate text-sm font-semibold">{p.name}</p>
                   <p className="text-xs text-gray-600">THB : {p.price} บาท</p>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </main>
 
-        {/* Bottom nav (component) */}
-        <BottomNav active="home" />
+        {/* Bottom nav */}
+        <BottomNav />
       </div>
     </div>
   );
